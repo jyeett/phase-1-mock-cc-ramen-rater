@@ -11,22 +11,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteBtn = document.querySelector('.delete-btn')
 
     let featuredRamen
+    let ramenList = []
+    let firstRender = 0
+    let newIds = 0
 
     // render page with initial data
     function renderRamen(ramenData) {
+        menu.replaceChildren()
+        console.log(ramenData)
         ramenData.forEach(ramenObj => {
+            newIds += 1
             getDetails(ramenData[0])
             ramenImg = createTag('img')
             ramenImg.src = ramenObj.image
-            // console.log(ramenImg)
             menu.append(ramenImg)
             ramenImg.addEventListener('click', () => getDetails(ramenObj))
         })
+        if (firstRender === 0) {
+            ramenList = [...ramenData]
+            firstRender += 1
+        }
     }
     
     // get data and set to featured ramen
     function getDetails(data) {
-        // console.log(data)
         const img = document.querySelector('.detail-image')
         const name = document.querySelector('.name')
         const restaurant = document.querySelector('.restaurant')
@@ -38,17 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
         editComment.value = data.comment
         editRating.value = data.rating
         img.src = data.image
-        img.id = data.id
-        console.log(img)
+        
         name.textContent = data.name
         restaurant.textContent = data.restaurant
         rating.textContent = data.rating
         comment.textContent = data.comment
 
         featuredRamen = retrieveFeatured(data)
-
-        // console.log(retrieveFeatured(data))
-
     }
     // gets featured ramen obj
     function retrieveFeatured(obj) { return obj }
@@ -70,21 +74,20 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     // delete ramen from menu
     deleteBtn.addEventListener('click', () => {
-        console.log(menu)
-        const removeId = featuredRamen.id
+        ramenList = ramenList.filter(obj => obj.id !== featuredRamen.id)
+        menu.replaceChildren()
+        renderRamen(ramenList)
         
     })
 
     // set new values to current ramen
     function updateRamen(newComment, newRating) {
-        // console.log(data)
         const rating = document.querySelector('#rating-display')
         const comment = document.querySelector('#comment-display')
         rating.textContent = newRating.value
         comment.textContent = newComment.value
         featuredRamen.comment = newComment.value
         featuredRamen.rating = newRating.value
-        // editForm.reset()
     }
     // creates new ramen object when submitted
     function submitRamen() {
@@ -95,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const commentIn = document.querySelector('#new-comment').value
 
         const newRamenObj = {
-            id: 8,
+            id: newIds,
             name: nameIn,
             restaurant: restaurantIn,
             image: imgIn,
@@ -109,7 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function addNewRamen(ramenObj) {
         const newImg = createTag('img')
         newImg.src = ramenObj.image
-        menu.append(newImg)
+        console.log(ramenList)
+        ramenList.push(ramenObj)
+        console.log(ramenList)
+        renderRamen(ramenList);
         newImg.addEventListener('click', () => getDetails(ramenObj))
     }
 })
