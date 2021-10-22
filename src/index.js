@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // add new ramen object to json
     function putNewRamen(object) {
-        // console.log(object.id)
         fetch(`${ramenUrl}/#${object.id}`, {
             method: "POST",
             headers: {
@@ -145,14 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'Content-Type': 'application/json'
             }
-            // body: JSON.stringify(object)
         })
         .then(res => res.json())
         .then(json => console.log(json))
     }
 
     function patchCurrentRamen(object) {
-        fetch(`${ramenUrl}/${id}`, {
+        fetch(`${ramenUrl}/${object.id}`, {
             method: "PATCH",
             headers: {
                 'Content-Type': 'application/json'
