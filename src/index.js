@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // render page with initial data
     function renderRamen(ramenData) {
         menu.replaceChildren()
-        console.log(ramenData)
+        // console.log(ramenData)
         ramenData.forEach(ramenObj => {
             newIds += 1
             getDetails(ramenData[0])
@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         comment.textContent = data.comment
 
         featuredRamen = retrieveFeatured(data)
+        // console.log(featuredRamen)
     }
     // gets featured ramen obj
     function retrieveFeatured(obj) { return obj }
@@ -74,10 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     // delete ramen from menu
     deleteBtn.addEventListener('click', () => {
+        console.log(featuredRamen.id)
+        deleteOldRamen(featuredRamen.id)
         ramenList = ramenList.filter(obj => obj.id !== featuredRamen.id)
         menu.replaceChildren()
         renderRamen(ramenList)
-        
     })
 
     // set new values to current ramen
@@ -88,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         comment.textContent = newComment.value
         featuredRamen.comment = newComment.value
         featuredRamen.rating = newRating.value
+        patchCurrentRamen(featuredRamen)
     }
     // creates new ramen object when submitted
     function submitRamen() {
@@ -96,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imgIn = document.querySelector('#new-image').value
         const ratingIn = document.querySelector('#new-rating').value
         const commentIn = document.querySelector('#new-comment').value
+        newIds += 1
 
         const newRamenObj = {
             id: newIds,
@@ -112,10 +116,50 @@ document.addEventListener('DOMContentLoaded', () => {
     function addNewRamen(ramenObj) {
         const newImg = createTag('img')
         newImg.src = ramenObj.image
-        console.log(ramenList)
+        // console.log(ramenList)
         ramenList.push(ramenObj)
-        console.log(ramenList)
+        console.log(ramenObj.id)
         renderRamen(ramenList);
+        putNewRamen(ramenObj)
+
         newImg.addEventListener('click', () => getDetails(ramenObj))
+    }
+    // add new ramen object to json
+    function putNewRamen(object) {
+        // console.log(object.id)
+        fetch(`${ramenUrl}/#${object.id}`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(object)
+        })
+        .then(res => res.json())
+        .then(json => console.log(json))
+    }
+
+    function deleteOldRamen(id) {
+        console.log(id)
+        fetch(`${ramenUrl}/${id}`, {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            // body: JSON.stringify(object)
+        })
+        .then(res => res.json())
+        .then(json => console.log(json))
+    }
+
+    function patchCurrentRamen(object) {
+        fetch(`${ramenUrl}/${id}`, {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(object)
+        })
+        .then(res => res.json())
+        .then(json => console.log(json))
     }
 })
